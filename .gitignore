@@ -4,8 +4,10 @@ Bin/
 Binaries/
 Lib/
 Logs/
-Generated/
 enc_temp_folder/
+Examples/
+Generated/
+Tests/
 
 #Settings
 *.json
