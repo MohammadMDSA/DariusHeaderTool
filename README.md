@@ -8,7 +8,7 @@
 
 </div>
 
-Kodgen is a C++17 library based on libclang. It provides tools to parse C++ source files and generate files from the parsed data. The C++ entities parsed in the current implementation are namespaces, structs/classes, non-member and member variables, non-member and member functions, enums and enum values.
+Kodgen is a C++20 library based on libclang. It provides tools to parse C++ source files and generate files from the parsed data. The C++ entities parsed in the current implementation are namespaces, structs/classes, non-member and member variables, non-member and member functions, enums and enum values.
 
 ## Getting Started
 ### Requirements:
