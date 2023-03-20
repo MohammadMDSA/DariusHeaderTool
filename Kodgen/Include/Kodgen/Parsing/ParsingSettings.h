@@ -145,7 +145,7 @@ namespace kodgen
 			PropertyParsingSettings					propertyParsingSettings;
 
 			/** C++ version used to parse the source code. Must match the C++ version you use to compile your project. */
-			ECppVersion								cppVersion						= ECppVersion::Cpp17;
+			ECppVersion								cppVersion						= ECppVersion::Cpp20;
 
 			/** If set to true, will parse all namespaces, whether they are annotated or not. */
 			bool									shouldParseAllNamespaces		= false;
