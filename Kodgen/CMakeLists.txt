@@ -99,7 +99,7 @@ if (KODGEN_DEV)
 endif()
 
 # Setup language requirements
-target_compile_features(${KodgenTargetLibrary} PUBLIC cxx_std_17)
+target_compile_features(${KodgenTargetLibrary} PUBLIC cxx_std_20)
 
 # Setup include directories
 target_include_directories(${KodgenTargetLibrary}
@@ -130,13 +130,13 @@ if (WIN32)
 	add_custom_command(	TARGET ${KodgenTargetLibrary} POST_BUILD
 						COMMAND ${CMAKE_COMMAND} -E copy
 						${PROJECT_SOURCE_DIR}/ThirdParty/x64/Shared/libclang.dll
-						$<IF:$<BOOL:${MSVC}>,${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}/libclang.dll,${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/libclang.dll>
+						${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/libclang.dll
 					)
 
 	add_custom_command(	TARGET ${KodgenTargetLibrary} POST_BUILD
 						COMMAND ${CMAKE_COMMAND} -E copy
 						${PROJECT_SOURCE_DIR}/ThirdParty/x64/Bin/vswhere.exe
-						$<IF:$<BOOL:${MSVC}>,${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}/vswhere.exe,${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/vswhere.exe>
+						${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/vswhere.exe
 					)
 endif()
 

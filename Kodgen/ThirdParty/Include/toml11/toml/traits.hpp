@@ -262,7 +262,7 @@ using return_type_of_t = std::invoke_result_t<F, Args...>;
 #else
 // result_of is deprecated after C++17
 template<typename F, typename ... Args>
-using return_type_of_t = typename std::result_of<F(Args...)>::type;
+using return_type_of_t = typename std::invoke_result<F(Args...)>::type;
 
 #endif
 
