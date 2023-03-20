@@ -139,6 +139,3 @@ if (WIN32)
 						${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/vswhere.exe
 					)
 endif()
-
-add_subdirectory(Examples)
-add_subdirectory(Tests)
