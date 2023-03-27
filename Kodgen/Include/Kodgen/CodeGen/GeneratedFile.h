@@ -18,6 +18,7 @@ namespace kodgen
 	{
 		private:
 			fs::path		_path;
+			fs::path		_path_temp;
 			fs::path		_sourceFilePath;
 			std::ofstream	_streamToFile;
 
@@ -108,6 +109,8 @@ namespace kodgen
 			*	@return The path to the source file for this generated file
 			*/
 			fs::path const&	getSourceFilePath()			const	noexcept;
+
+			bool			hasNewContent()				const;
 	};
 
 	#include "Kodgen/CodeGen/GeneratedFile.inl"
