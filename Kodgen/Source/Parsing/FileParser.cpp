@@ -80,7 +80,7 @@ bool FileParser::parse(fs::path const& toParseFile, FileParsingResult& out_resul
 
 			if (_settings->shouldLogDiagnostic)
 			{
-				logDiagnostic(translationUnit);
+				logDiagnostic(translationUnit, toParseFile);
 			}
 
 			clang_disposeTranslationUnit(translationUnit);
@@ -268,7 +268,7 @@ void FileParser::postParse(fs::path const&, FileParsingResult const&) noexcept
 	*/
 }
 
-bool FileParser::logDiagnostic(CXTranslationUnit const& translationUnit) const noexcept
+bool FileParser::logDiagnostic(CXTranslationUnit const& translationUnit, fs::path const& filePath) const noexcept
 {
 	if (logger != nullptr)
 	{
@@ -279,7 +279,7 @@ bool FileParser::logDiagnostic(CXTranslationUnit const& translationUnit) const n
 		//Log only if there is at least 1 diagnostic entry
 		if (diagnosticsCount > 0)
 		{
-			logger->log("Start diagnostic...", ILogger::ELogSeverity::Info);
+			logger->log("Start diagnostic...:" + filePath.string(), ILogger::ELogSeverity::Info);
 
 			for (unsigned i = 0u; i < diagnosticsCount; i++)
 			{
