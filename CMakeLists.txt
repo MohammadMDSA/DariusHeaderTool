@@ -10,3 +10,4 @@ message("Compiler:	${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}")
 include(CTest)
 
 add_subdirectory(Kodgen)
+add_subdirectory(DariusGenerator)
