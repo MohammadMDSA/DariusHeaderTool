@@ -107,7 +107,7 @@ namespace kodgen
 			* 
 			*	@return true if the diagnostic could be logged, else false (logger is nullptr).
 			*/
-			bool						logDiagnostic(CXTranslationUnit const& translationUnit)	const	noexcept;
+			bool						logDiagnostic(CXTranslationUnit const& translationUnit, fs::path const& filePath)	const	noexcept;
 
 			/**
 			*	@brief Helper to get the ParsingResult contained in the context as a FileParsingResult.
