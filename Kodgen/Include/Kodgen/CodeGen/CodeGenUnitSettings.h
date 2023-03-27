@@ -46,7 +46,7 @@ namespace kodgen
 
 		public:
 			/** Name of the header containing all entity macro definitions. */
-			static inline fs::path const entityMacrosFilename	= "EntityMacros.h";
+			static inline fs::path const entityMacrosFilename	= "DariusEntityMacros.h";
 
 			/**
 			*	@brief	Setter for _outputDirectory.
