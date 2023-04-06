@@ -142,6 +142,7 @@ public:
 			returnName.insert(0, "&");
 		}
 
+		inout_result += "public: " + env.getSeparator();
 		if (isInline)
 			inout_result += preTypeQualifiers + rawReturnType + " " + methodName + postQualifiers + " { return " + returnName + "; }" + env.getSeparator();
 

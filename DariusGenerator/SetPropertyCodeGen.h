@@ -119,6 +119,8 @@ public:
 			preTypeQualifiers += "static ";
 		}
 
+		inout_result += "public: " + env.getSeparator();
+
 		if (isInline)
 			inout_result += preTypeQualifiers + "void " + methodName + " { " + field.name + " = " + paramName + "; }" + env.getSeparator();
 		else
