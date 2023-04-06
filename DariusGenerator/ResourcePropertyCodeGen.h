@@ -97,11 +97,14 @@ public:
 		inout_result += "\treturn " + field.name + ".Get();" + env.getSeparator();
 		inout_result += "}" + env.getSeparator();
 
-		inout_result += accessSpecifierStr + env.getSeparator();
-		inout_result += "INLINE void _Set" + fieldOfficialName + "(D_RESOURCE::ResourceHandle handle)" + env.getSeparator();
-		inout_result += "{" + env.getSeparator();
-		inout_result += "\t" + field.name + " = D_RESOURCE::GetResource<" + resourceType + ">(handle, *this);" + env.getSeparator();
-		inout_result += "}" + env.getSeparator();
+		if (property.arguments.size() == 0 || (property.arguments.size() > 0 && property.arguments[0] != "false"))
+		{
+			inout_result += accessSpecifierStr + env.getSeparator();
+			inout_result += "INLINE void _Set" + fieldOfficialName + "(D_RESOURCE::ResourceHandle handle)" + env.getSeparator();
+			inout_result += "{" + env.getSeparator();
+			inout_result += "\t" + field.name + " = D_RESOURCE::GetResource<" + resourceType + ">(handle, *this);" + env.getSeparator();
+			inout_result += "}" + env.getSeparator();
+		}
 
 		inout_result += "private:" + env.getSeparator();
 		inout_result += "INLINE D_CORE::Uuid __Get" + fieldOfficialName + "_UUID() const" + env.getSeparator();
