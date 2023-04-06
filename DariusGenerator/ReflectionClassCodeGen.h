@@ -25,7 +25,22 @@ public:
 		kodgen::MacroCodeGenEnv& env,
 		std::string& inout_result) noexcept override
 	{
-		inout_result += "RTTR_REGISTRATION_FRIEND \\\n";
+		kodgen::StructClassInfo const& clazz = reinterpret_cast<kodgen::StructClassInfo const&>(entity);
+
+		inout_result += "RTTR_REGISTRATION_FRIEND " + env.getSeparator();
+		inout_result += "RTTR_ENABLE(";
+
+		bool firstParent = true;
+
+		for (auto const& parent : clazz.parents)
+		{
+			if (!firstParent)
+				inout_result += ", ";
+
+			firstParent = false;
+			inout_result += parent.type.getCanonicalName();
+		}
+		inout_result += ") " + env.getSeparator();
 
 		return true;
 	}
@@ -48,16 +63,29 @@ public:
 
 		for (auto const& field : clazz.fields)
 		{
-			auto fieldName = field.name[0] == *"m" ? field.name.substr(1, field.name.size() - 1) : field.name;
+			bool isConst;
+			bool isSerializable;
+			bool isResource;
+
+			GetFieldInfo(field, isConst, isSerializable, isResource);
+
+			auto fieldName = field.name[0] == 'm' ? field.name.substr(1, field.name.size() - 1) : field.name;
 
 			// Checking for const descriptor
-			if (IsFieldConst(field))
+			if (isConst)
 				inout_result += "\n\t.property_readonly(\"" + fieldName + "\", &" + field.getFullName() + ")";
 			else
 			{
-				inout_result += "\n\t.property(\"" + fieldName + "\", &" + field.getFullName() + ")";
+				if (isResource)
+				{
+					inout_result += "\n\t.property(\"" + fieldName + "\", &" + clazz.getFullName() + "::__Get" + fieldName + "_UUID, &" + clazz.getFullName() + "::__Set" + fieldName + "_UUID)";
+				}
+				else
+				{
+					inout_result += "\n\t.property(\"" + fieldName + "\", &" + field.getFullName() + ")";
+				}
 				// Serializable
-				if (!IsFieldSerializable(field))
+				if (!isSerializable)
 					inout_result += " (rttr::metadata(\"NO_SERIALIZE\", true))";
 			}
 		}
