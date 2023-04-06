@@ -85,7 +85,7 @@ bool initParsingSettings(kodgen::ParsingSettings& parsingSettings)
 
 	parsingSettings.cppVersion = kodgen::ECppVersion::Cpp20;
 
-	//This is setuped that way for CI tools only
+	//This is setup that way for CI tools only
 	//In reality, the compiler used by the user machine running the generator should be set.
 	//It has nothing to see with the compiler used to compile the generator.
 #if defined(__GNUC__)
