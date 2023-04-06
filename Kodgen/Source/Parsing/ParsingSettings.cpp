@@ -40,7 +40,7 @@ void ParsingSettings::refreshBuildCommandStrings(ILogger* logger) noexcept
 	_methodPropertyMacro	= "-D" + propertyParsingSettings.methodMacroName	+ "(...)=__attribute__((annotate(\"KGM:\"#__VA_ARGS__)))";
 	_enumPropertyMacro		= "-D" + propertyParsingSettings.enumMacroName		+ "(...)=__attribute__((annotate(\"KGE:\"#__VA_ARGS__)))";
 	_enumValuePropertyMacro	= "-D" + propertyParsingSettings.enumValueMacroName	+ "(...)=__attribute__((annotate(\"KGEV:\"#__VA_ARGS__)))";
-	//_pchPath				= "-include-pch=" + pchPath.lexically_normal().string();
+	_pchPath				= "-include-pch=" + pchPath.lexically_normal().string();
 
 	//Setup project include directories
 	std::vector<fs::path> nativeIncludeDirectories;
@@ -109,17 +109,6 @@ void ParsingSettings::refreshCompilationArguments(ILogger* logger) noexcept
 	_compilationArguments.emplace_back("-v");
 #endif
 
-	// PCH
-	if (shouldUsePch)
-	{
-		logger->log("Using pch: " + pchPath.string());
-		_compilationArguments.emplace_back("-Xclang");
-		_compilationArguments.emplace_back("-include-pch");
-		_compilationArguments.emplace_back("-Xclang");
-		_compilationArguments.emplace_back(pchPath.lexically_normal().string().c_str());
-		//_compilationArguments.emplace_back(_pchPath.data());
-	}
-
 	//Use the user-specified C++ version
 	_compilationArguments.emplace_back(_cppVersionCommandLine.data());
 
@@ -140,6 +129,18 @@ void ParsingSettings::refreshCompilationArguments(ILogger* logger) noexcept
 	{
 		_compilationArguments.emplace_back(includeDir.data());
 	}
+
+	// PCH
+	if (shouldUsePch)
+	{
+		logger->log("Using pch: " + pchPath.string());
+		_compilationArguments.emplace_back("-Xclang");
+		//_compilationArguments.emplace_back("-include-pch");
+		//_compilationArguments.emplace_back("-Xclang");
+		//_compilationArguments.emplace_back(pchPath.string().c_str());
+		_compilationArguments.emplace_back(_pchPath.data());
+	}
+
 }
 
 bool ParsingSettings::loadSettingsValues(toml::value const& tomlData, ILogger* logger) noexcept
