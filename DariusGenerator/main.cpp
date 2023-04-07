@@ -166,7 +166,7 @@ int main(int argc, char** argv)
 	initCodeGenManagerSettings(workingDirectory, codeGenMgr.settings);
 
 	//Kick-off code generation
-	kodgen::CodeGenResult genResult = codeGenMgr.run(fileParser, codeGenUnit, true);
+	kodgen::CodeGenResult genResult = codeGenMgr.run(fileParser, codeGenUnit, false);
 
 	if (genResult.completed)
 	{
