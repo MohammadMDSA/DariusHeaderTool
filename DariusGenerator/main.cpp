@@ -1,4 +1,4 @@
-#include <Kodgen/Parsing/FileParser.h>
+#include "CppPropsParser.h"
 #include <Kodgen/CodeGen/CodeGenManager.h>
 #include <Kodgen/CodeGen/Macro/MacroCodeGenUnit.h>
 #include <Kodgen/CodeGen/Macro/MacroCodeGenUnitSettings.h>
@@ -135,7 +135,7 @@ int main(int argc, char** argv)
 	logger.log("Output Directory: " + outputDirectory.string());
 
 	//Setup FileParser
-	kodgen::FileParser fileParser;
+	CppPropsParser fileParser;
 	fileParser.logger = &logger;
 
 	auto& settings = fileParser.getSettings();
