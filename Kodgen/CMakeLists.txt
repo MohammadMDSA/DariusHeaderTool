@@ -121,7 +121,7 @@ target_link_libraries(${KodgenTargetLibrary}
 						INTERFACE
 							$<$<AND:$<CXX_COMPILER_ID:Clang,AppleClang>,$<VERSION_LESS:${CMAKE_CXX_COMPILER_VERSION},9.0>>:stdc++fs>	#filesystem	pre Clang-9
 							$<$<AND:$<CXX_COMPILER_ID:GNU>,$<VERSION_LESS:${CMAKE_CXX_COMPILER_VERSION},9.0>>:stdc++fs>					#filesystem	pre GCC-9
-							clang
+							libclang
 							${CMAKE_THREAD_LIBS_INIT}
 						)
 
