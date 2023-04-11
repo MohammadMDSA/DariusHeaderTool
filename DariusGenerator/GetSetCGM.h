@@ -5,6 +5,8 @@
 #include "GetPropertyCodeGen.h"
 #include "SetPropertyCodeGen.h"
 #include "ReflectionClassCodeGen.h"
+#include "ReflectionStructCodeGen.h"
+#include "ReflectionEnumCodeGen.h"
 #include "ResourcePropertyCodeGen.h"
 
 class GetSetCGM : public kodgen::MacroCodeGenModule
@@ -13,6 +15,8 @@ class GetSetCGM : public kodgen::MacroCodeGenModule
 		GetPropertyCodeGen	_getPropertyCodeGen;
 		SetPropertyCodeGen	_setPropertyCodeGen;
 		ReflectionClassCodeGen _reflectionClassCodeGen;
+		ReflectionStructCodeGen _reflectionStructCodeGen;
+		ReflectionEnumCodeGen _reflectionEnumCodeGen;
 		ResourcePropertyCodeGen _resourcePropertyCodeGen;
 
 	public:
@@ -21,6 +25,8 @@ class GetSetCGM : public kodgen::MacroCodeGenModule
 			addPropertyCodeGen(_getPropertyCodeGen);
 			addPropertyCodeGen(_setPropertyCodeGen);
 			addPropertyCodeGen(_reflectionClassCodeGen);
+			addPropertyCodeGen(_reflectionStructCodeGen);
+			addPropertyCodeGen(_reflectionEnumCodeGen);
 			addPropertyCodeGen(_resourcePropertyCodeGen);
 		}
 
