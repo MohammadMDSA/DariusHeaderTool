@@ -80,6 +80,7 @@ bool initParsingSettings(kodgen::ParsingSettings& parsingSettings)
 	parsingSettings.propertyParsingSettings.enumValueMacroName	= "DEnumVal";
 
 	parsingSettings.shouldParseAllNamespaces = true;
+	parsingSettings.shouldParseAllEnumValues = true;
 	
 	parsingSettings.shouldLogDiagnostic = false;
 
