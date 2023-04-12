@@ -94,7 +94,32 @@ public:
 		// Adding virtual fields through getter and setter
 		for (auto const& arg : property.arguments)
 		{
-			inout_result += "\n\t.property(\"" + arg + "\", &" + clazz.getFullName() + "::Get" + arg + ", &" + clazz.getFullName() + "::Set" + arg + ")";
+			bool isSerializable = true;
+			bool isBoolean = false;
+
+			short offset = 0;
+
+			if (arg[offset] == '_')
+			{
+				isSerializable = false;
+				offset++;
+			}
+
+			if (arg[offset] == 'b')
+			{
+				isBoolean = true;
+				offset++;
+			}
+
+			std::string propName = arg.substr(offset, arg.size() - offset);
+
+			inout_result += "\n\t.property(\"" + propName + "\", &" + clazz.getFullName();
+			inout_result += isBoolean ? "::Is" : "::Get";
+			inout_result += propName + ", &" + clazz.getFullName() + "::Set" + propName + ")";
+
+			// Serializable
+			if (!isSerializable)
+				inout_result += " (rttr::metadata(\"NO_SERIALIZE\", true))";
 		}
 
 		inout_result += ";";
