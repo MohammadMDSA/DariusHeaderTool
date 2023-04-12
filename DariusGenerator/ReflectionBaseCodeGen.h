@@ -61,6 +61,7 @@ public:
 		inout_result += "{\n";
 		inout_result += "rttr::registration::class_<" + clazz.getFullName() + ">(\"" + clazz.getFullName() + "\")";
 
+		// Adding reflection registration for actual fields
 		for (auto const& field : clazz.fields)
 		{
 			bool isConst;
@@ -88,6 +89,12 @@ public:
 				if (!isSerializable)
 					inout_result += " (rttr::metadata(\"NO_SERIALIZE\", true))";
 			}
+		}
+
+		// Adding virtual fields through getter and setter
+		for (auto const& arg : property.arguments)
+		{
+			inout_result += "\n\t.property(\"" + arg + "\", &" + clazz.getFullName() + "::Get" + arg + ", &" + clazz.getFullName() + "::Set" + arg + ")";
 		}
 
 		inout_result += ";";
