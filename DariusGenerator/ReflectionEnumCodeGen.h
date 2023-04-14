@@ -45,14 +45,12 @@ public:
 			if (!isFirst)
 				inout_result += ",";
 
-			inout_result += "\n\trttr::value(\"\", " + enumVal.getFullName() + ")";
+			inout_result += "\n\trttr::value(\"" + enumVal.name + "\", " + enumVal.getFullName() + ")";
 
 			isFirst = false;
 		}
 
 		inout_result += ");\n}\n";
-
-		inout_result += "\n}\n";
 
 		return true;
 	}
