@@ -12,7 +12,7 @@ class ReflectionBaseCodeGen : public kodgen::MacroPropertyCodeGen
 public:
 	ReflectionBaseCodeGen(kodgen::EEntityType entityType) noexcept :
 		kodgen::MacroPropertyCodeGen("Serialize", entityType)
-	{}	
+	{}
 
 	virtual int getGenerationOrder() const noexcept override
 	{
@@ -54,12 +54,23 @@ public:
 		kodgen::StructClassInfo const& clazz = reinterpret_cast<kodgen::StructClassInfo const&>(entity);
 
 		if (clazz.properties.size() <= 0)
-			return false;
+			return true;
+
+		bool isResourceCLass = false;
+
+		// Check if the class is resource (whether it has "Resource" property)
+		if (std::find_if(clazz.properties.begin(), clazz.properties.end(), [](auto const& prop) { return prop.name == "Resource"; }) != clazz.properties.end())
+			isResourceCLass = true;
 
 		inout_result += "#include <rttr/registration.h>\n";
 		inout_result += "RTTR_REGISTRATION \n";
 		inout_result += "{\n";
 		inout_result += "rttr::registration::class_<" + clazz.getFullName() + ">(\"" + clazz.getFullName() + "\")";
+
+		if (isResourceCLass)
+		{
+			inout_result += "(rttr::metadata(\"RESOURCE\", true))";
+		}
 
 		// Adding reflection registration for actual fields
 		for (auto const& field : clazz.fields)
@@ -85,9 +96,30 @@ public:
 				{
 					inout_result += "\n\t.property(\"" + fieldName + "\", &" + field.getFullName() + ")";
 				}
-				// Serializable
-				if (!isSerializable)
-					inout_result += " (rttr::metadata(\"NO_SERIALIZE\", true))";
+
+				if (!isSerializable || isResource)
+				{
+					bool isFirst = true;
+
+					inout_result += "(";
+
+					// Serializable
+					if (!isSerializable)
+					{
+						inout_result += "\n\t\trttr::metadata(\"NO_SERIALIZE\", true)";
+						isFirst = false;
+					}
+
+					if (isResource)
+					{
+						if (!isFirst)
+							inout_result += ",";
+						inout_result += "\n\t\trttr::metadata(\"RESOURCE\", true)";
+						isFirst = false;
+					}
+
+					inout_result += ")";
+				}
 			}
 		}
 
