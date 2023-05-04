@@ -31,20 +31,15 @@ bool IsResourceField(kodgen::FieldInfo const& field)
 	return false;
 }
 
-void GetFieldInfo(kodgen::FieldInfo const& field, bool& isConst, bool& isSerializable, bool& isResource)
+void GetFieldInfo(kodgen::FieldInfo const& field, bool& isConst, bool& isSerializable)
 {
-	isSerializable = isResource = false;
+	isSerializable = false;
 
 	for (auto const& prop : field.properties)
 	{
 		if (prop.name == "Serialize")
 		{
 			isSerializable = true;
-			continue;
-		}
-		else if (prop.name == "Resource")
-		{
-			isResource = true;
 			continue;
 		}
 	}

@@ -77,27 +77,20 @@ public:
 		{
 			bool isConst;
 			bool isSerializable;
-			bool isResource;
 
-			GetFieldInfo(field, isConst, isSerializable, isResource);
+			GetFieldInfo(field, isConst, isSerializable);
 
 			auto fieldName = field.name[0] == 'm' ? field.name.substr(1, field.name.size() - 1) : field.name;
 
 			// Checking for const descriptor
 			if (isConst)
-				inout_result += "\n\t.property_readonly(\"" + fieldName + "\", &" + field.getFullName() + ")";
+				inout_result += "\n\t.property_readonly(\"" + fieldName + "\", &" + field.getFullName() + ")(rttr::metadata(\"NO_SERIALIZE\", true))";
 			else
 			{
-				if (isResource)
-				{
-					inout_result += "\n\t.property(\"" + fieldName + "\", &" + clazz.getFullName() + "::__Get" + fieldName + "_UUID, &" + clazz.getFullName() + "::__Set" + fieldName + "_UUID)";
-				}
-				else
-				{
-					inout_result += "\n\t.property(\"" + fieldName + "\", &" + field.getFullName() + ")";
-				}
 
-				if (!isSerializable || isResource)
+				inout_result += "\n\t.property(\"" + fieldName + "\", &" + field.getFullName() + ")";
+
+				if (!isSerializable || false)
 				{
 					bool isFirst = true;
 
@@ -107,14 +100,6 @@ public:
 					if (!isSerializable)
 					{
 						inout_result += "\n\t\trttr::metadata(\"NO_SERIALIZE\", true)";
-						isFirst = false;
-					}
-
-					if (isResource)
-					{
-						if (!isFirst)
-							inout_result += ",";
-						inout_result += "\n\t\trttr::metadata(\"RESOURCE\", true)";
 						isFirst = false;
 					}
 
@@ -155,6 +140,13 @@ public:
 		}
 
 		inout_result += ";";
+
+		if (isResourceCLass)
+		{
+			inout_result += "\nrttr::registration::class_<D_CORE::Ref<" + clazz.getFullName() + ">>(\"D_CORE::Ref<" + clazz.getFullName() + ">\");\n";
+
+			inout_result += "rttr::type::register_wrapper_converter_for_base_classes<D_CORE::Ref<" + clazz.getFullName() + ">>();";
+		}
 
 		inout_result += "\n}\n";
 
