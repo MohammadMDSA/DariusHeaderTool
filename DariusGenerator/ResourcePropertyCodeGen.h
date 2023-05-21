@@ -27,9 +27,9 @@ public:
 		std::string errorMessage;
 
 		//Can't have * and & at the same time
-		if (field.type.getName(false, false, true) != "Darius::Core::Ref" || !kodgen::TypeInfo::isTemplateTypename(field.type.getCanonicalName()))
+		if (field.type.getName(false, false, true) != "Darius::ResourceManager::ResourceRef" || !kodgen::TypeInfo::isTemplateTypename(field.type.getCanonicalName()))
 		{
-			errorMessage = "Resource field has to be wrapped in D_CORE::Ref. (" + field.name + " of type: " + field.type.getName(false, false, true) + ")";
+			errorMessage = "Resource field has to be wrapped in D_RESOURCE::ResourceRef. (" + field.name + " of type: " + field.type.getName(false, false, true) + ")";
 		}
 
 		if (!errorMessage.empty())

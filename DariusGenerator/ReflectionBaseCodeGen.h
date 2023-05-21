@@ -84,7 +84,7 @@ public:
 
 			// Checking for const descriptor
 			if (isConst)
-				inout_result += "\n\t.property_readonly(\"" + fieldName + "\", &" + field.getFullName() + ")(rttr::metadata(\"NO_SERIALIZE\", true))";
+				inout_result += "\n\t.property_readonly(\"" + fieldName + "\", &" + field.getFullName() + ")";
 			else
 			{
 
@@ -143,9 +143,9 @@ public:
 
 		if (isResourceCLass)
 		{
-			inout_result += "\nrttr::registration::class_<D_CORE::Ref<" + clazz.getFullName() + ">>(\"D_CORE::Ref<" + clazz.getFullName() + ">\");\n";
+			inout_result += "\nrttr::registration::class_<D_RESOURCE::ResourceRef<" + clazz.getFullName() + ">>(\"D_RESOURCE::ResourceRef<" + clazz.getFullName() + ">\");\n";
 
-			inout_result += "rttr::type::register_wrapper_converter_for_base_classes<D_CORE::Ref<" + clazz.getFullName() + ">>();";
+			inout_result += "rttr::type::register_wrapper_converter_for_base_classes<D_RESOURCE::ResourceRef<" + clazz.getFullName() + ">>();";
 		}
 
 		inout_result += "\n}\n";
