@@ -23,16 +23,16 @@ public:
 		std::string errorMessage;
 
 		//Check that Set property arguments are valid
-		if (property.arguments.size() > 1)
+		if (property.arguments.size() > 2)
 		{
-			errorMessage = "Set property can't take more than one argument.";
+			errorMessage = "Set property can't take more than two argument.";
 		}
 		else
 		{
 			//Check that Get property arguments are valid
 			for (std::string const& arg : property.arguments)
 			{
-				if (arg != "inline" && arg != "explicit")
+				if (arg != "inline" && arg != "explicit" && arg != "dirty")
 				{
 					errorMessage = "Get property only accepts 'inline', and 'explicit argument.";
 					break;
@@ -72,14 +72,15 @@ public:
 		}
 
 		bool isInline = false;
+		bool dirty = false;
 
 		// Extracting property arguments
 		for (std::string const& subprop : property.arguments)
 		{
 			if (subprop.at(0) == 'i')			// inline
-			{
 				isInline = true;
-			}
+			else if (subprop.at(0) == 'd')		// dirty
+				dirty = true;
 		}
 
 
@@ -122,7 +123,12 @@ public:
 		inout_result += "public: " + env.getSeparator();
 
 		if (isInline)
-			inout_result += preTypeQualifiers + "void " + methodName + " { " + field.name + " = " + paramName + "; }" + env.getSeparator();
+		{
+			if (dirty)
+				inout_result += preTypeQualifiers + "void " + methodName + " { if(!CanChange()) return; " + field.name + " = " + paramName + "; SetDirty(); }" + env.getSeparator();
+			else
+				inout_result += preTypeQualifiers + "void " + methodName + " { " + field.name + " = " + paramName + "; }" + env.getSeparator();
+		}
 		else
 			inout_result += preTypeQualifiers + "void " + methodName + ";" + env.getSeparator();
 
@@ -138,6 +144,7 @@ public:
 
 		bool				isInline = false;
 		bool				isExplicit = false;
+		bool				isDirtyable = false;
 
 		// Extracting property arguments
 		for (std::string const& subprop : property.arguments)
@@ -151,6 +158,10 @@ public:
 			{
 				// Not generating setter if it is marked as explicit
 				return true;
+			}
+			else if (subprop.at(0) == 'd')		// dirty
+			{
+				isDirtyable = true;
 			}
 		}
 
@@ -180,7 +191,10 @@ public:
 
 		methodName += ")";
 
-		inout_result += preTypeQualifiers + "void " + entity.outerEntity->getFullName() + "::" + methodName + " { " + field.name + " = " + paramName + "; }" + env.getSeparator();
+		if (isDirtyable)
+			inout_result += preTypeQualifiers + "void " + entity.outerEntity->getFullName() + "::" + methodName + " { if(!CanChange()) return; " + field.name + " = " + paramName + "; SetDirty(); }" + env.getSeparator();
+		else
+			inout_result += preTypeQualifiers + "void " + entity.outerEntity->getFullName() + "::" + methodName + " { " + field.name + " = " + paramName + "; }" + env.getSeparator();
 
 		return true;
 	}

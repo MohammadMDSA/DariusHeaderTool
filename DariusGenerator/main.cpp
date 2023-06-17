@@ -89,15 +89,15 @@ bool initParsingSettings(kodgen::ParsingSettings& parsingSettings)
 	//This is setup that way for CI tools only
 	//In reality, the compiler used by the user machine running the generator should be set.
 	//It has nothing to see with the compiler used to compile the generator.
-#if defined(__GNUC__)
-	return parsingSettings.setCompilerExeName("g++");
-#elif defined(__clang__)
+//#if defined(__GNUC__)
+//	return parsingSettings.setCompilerExeName("g++");
+//#elif defined(__clang__)
 	return parsingSettings.setCompilerExeName("clang++");
-#elif defined(_MSC_VER)
-	return parsingSettings.setCompilerExeName("msvc");
-#else
-	return false;	//Unsupported compiler
-#endif
+//#elif defined(_MSC_VER)
+//	return parsingSettings.setCompilerExeName("msvc");
+//#else
+//	return false;	//Unsupported compiler
+//#endif
 }
 
 int main(int argc, char** argv)
@@ -147,6 +147,8 @@ int main(int argc, char** argv)
 		logger.log("Compiler could not be set because it is not supported on the current machine or vswhere could not be found (Windows|MSVC only).", kodgen::ILogger::ELogSeverity::Error);
 		return EXIT_FAILURE;
 	}
+
+	logger.log("Using Compiler: " + settings.getCompilerExeName());
 
 	//Setup code generation unit
 	kodgen::MacroCodeGenUnit codeGenUnit;

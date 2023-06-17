@@ -55,6 +55,15 @@ void ParsingSettings::refreshBuildCommandStrings(ILogger* logger) noexcept
 			{
 				logger->log("Could not find any include directory from the specified compiler. Make sure the compiler is installed on your computer.", kodgen::ILogger::ELogSeverity::Warning);
 			}
+			else
+			{
+				logger->log("Using native include directory:");
+				for (auto const& dir : nativeIncludeDirectories)
+				{
+					logger->log("- " + dir.string());
+				}
+
+			}
 		}
 		else
 		{
@@ -124,6 +133,7 @@ void ParsingSettings::refreshCompilationArguments(ILogger* logger) noexcept
 	_compilationArguments.emplace_back(_functionPropertyMacro.data());
 	_compilationArguments.emplace_back(_enumPropertyMacro.data());
 	_compilationArguments.emplace_back(_enumValuePropertyMacro.data());
+	_compilationArguments.emplace_back("-DNOMINMAX");
 
 	for (std::string const& includeDir : _projectIncludeDirs)
 	{
