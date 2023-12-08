@@ -19,6 +19,22 @@ public:
 		return -1;
 	}
 
+	virtual bool preGenerateCodeForEntity(kodgen::EntityInfo const& entity, kodgen::Property const& property, std::uint8_t propertyIndex, kodgen::MacroCodeGenEnv& env) noexcept override
+	{
+		kodgen::StructClassInfo const& safeClass = reinterpret_cast<kodgen::StructClassInfo const&>(entity);
+		kodgen::StructClassInfo& clazz = const_cast<kodgen::StructClassInfo&>(safeClass);
+
+		bool foundCodeGenIdentifier = false;
+		for (auto const& innerClass : clazz.nestedClasses)
+		{
+			if (innerClass->name == "__CodeGenIdentifier__")
+			{
+				foundCodeGenIdentifier = true;
+				clazz.codeGenIdentifierLine = innerClass->line;
+			}
+		}
+	}
+
 	virtual bool generateClassFooterCodeForEntity(kodgen::EntityInfo const& entity,
 		kodgen::Property const& property,
 		std::uint8_t			propertyIndex,

@@ -77,6 +77,9 @@ namespace kodgen
 			/** List of all methods contained in this class. */
 			std::vector<MethodInfo>								methods;
 
+			/** Line number of the nested code gen identifier */
+			int													codeGenIdentifierLine = -1;
+
 			StructClassInfo()												noexcept;
 			StructClassInfo(CXCursor const&			cursor,
 							std::vector<Property>&&	properties,
