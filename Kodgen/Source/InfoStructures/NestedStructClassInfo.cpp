@@ -18,4 +18,8 @@ NestedStructClassInfo::NestedStructClassInfo(StructClassInfo&& base, EAccessSpec
 	nestedEnums		= std::move(base.nestedEnums);
 	fields			= std::move(base.fields);
 	methods			= std::move(base.methods);
+
+	line			= std::move(base.line);
+	column			= std::move(base.column);
+	offset			= std::move(base.offset);
 }

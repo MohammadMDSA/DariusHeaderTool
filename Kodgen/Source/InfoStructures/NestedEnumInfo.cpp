@@ -13,4 +13,8 @@ NestedEnumInfo::NestedEnumInfo(EnumInfo&& base, EAccessSpecifier accessSpecifier
 	type			= std::move(base.type);
 	underlyingType	= std::move(base.underlyingType);
 	enumValues		= std::move(base.enumValues);
+
+	line			= std::move(base.line);
+	column			= std::move(base.column);
+	offset			= std::move(base.offset);
 }

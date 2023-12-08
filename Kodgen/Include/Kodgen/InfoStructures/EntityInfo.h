@@ -30,7 +30,16 @@ namespace kodgen
 			
 			/** Unique id of the entity. */
 			std::string				id;
-			
+
+			/** Line number of the entity in the file */
+			unsigned int			line;
+
+			/** Column location the entity in the line */
+			unsigned int			column;
+
+			/** Offset of the entity in the file */
+			unsigned int			offset;
+
 			/** Entity this entity is contained into, nullptr if none (file level). */
 			EntityInfo const*		outerEntity	= nullptr;
 			

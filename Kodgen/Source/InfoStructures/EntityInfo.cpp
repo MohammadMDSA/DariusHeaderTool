@@ -10,6 +10,8 @@ EntityInfo::EntityInfo(CXCursor const& cursor, std::vector<Property>&& propertie
 	id{Helpers::getString(clang_getCursorUSR(cursor))},
 	properties{std::forward<std::vector<Property>>(properties)}
 {
+	auto location = clang_getCursorLocation(cursor);
+	clang_getFileLocation(location, nullptr, &line, &column, &offset);
 }
 
 std::string EntityInfo::getFullName() const noexcept
