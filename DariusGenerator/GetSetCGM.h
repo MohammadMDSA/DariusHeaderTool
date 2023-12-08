@@ -8,6 +8,7 @@
 #include "ReflectionStructCodeGen.h"
 #include "ReflectionEnumCodeGen.h"
 #include "ResourcePropertyCodeGen.h"
+#include "RegistrationBaseCodeGen.h"
 
 class GetSetCGM : public kodgen::MacroCodeGenModule
 {
@@ -18,6 +19,8 @@ class GetSetCGM : public kodgen::MacroCodeGenModule
 		ReflectionStructCodeGen _reflectionStructCodeGen;
 		ReflectionEnumCodeGen _reflectionEnumCodeGen;
 		ResourcePropertyCodeGen _resourcePropertyCodeGen;
+		RegistrationClassCodeGen _registrationClassCodeGen;
+		RegistrationStructCodeGen _registrationStructCodeGen;
 
 	public:
 		GetSetCGM() noexcept
@@ -28,6 +31,8 @@ class GetSetCGM : public kodgen::MacroCodeGenModule
 			addPropertyCodeGen(_reflectionStructCodeGen);
 			addPropertyCodeGen(_reflectionEnumCodeGen);
 			addPropertyCodeGen(_resourcePropertyCodeGen);
+			addPropertyCodeGen(_registrationClassCodeGen);
+			addPropertyCodeGen(_registrationStructCodeGen);
 		}
 
 		GetSetCGM(GetSetCGM const&):

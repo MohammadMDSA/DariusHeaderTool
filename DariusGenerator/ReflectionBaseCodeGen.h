@@ -33,11 +33,17 @@ public:
 				clazz.codeGenIdentifierLine = innerClass->line;
 			}
 		}
-		env.getLogger()->log((clazz.entityType == kodgen::EEntityType::Class ? "Class" : "Struct") + std::to_string(clazz.nestedClasses.size()) + " " + clazz.getFullName());
+
+		// Ignore if it is a struct
+		if (!foundCodeGenIdentifier && entity.entityType == kodgen::EEntityType::Struct)
+		{
+			foundCodeGenIdentifier = true;
+		}
 
 		if (!foundCodeGenIdentifier)
 		{
-			env.getLogger()->log("Could not find GENERATED_CODE() macro in the class body for class " + clazz.getFullName(), kodgen::ILogger::ELogSeverity::Error);
+			std::string entityType = clazz.entityType == kodgen::EEntityType::Class ? " class " : " struct ";
+			env.getLogger()->log("Could not find GENERATED_CODE() macro in the class body for " + entityType + clazz.getFullName(), kodgen::ILogger::ELogSeverity::Error);
 		}
 		return foundCodeGenIdentifier;
 	}

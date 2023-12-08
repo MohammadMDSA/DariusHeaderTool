@@ -6,31 +6,33 @@
 #include "Kodgen/Misc/DisableWarningMacros.h"
 #include "Kodgen/Misc/TomlUtility.h"
 
+#include <algorithm>
+#include <functional>
 #include <sstream>
 
 using namespace kodgen;
 
-FileParser::FileParser() noexcept:
-	_clangIndex{clang_createIndex(0, 0)},
-	_settings{std::make_shared<ParsingSettings>()},
-	logger{nullptr}
+FileParser::FileParser() noexcept :
+	_clangIndex{ clang_createIndex(0, 0) },
+	_settings{ std::make_shared<ParsingSettings>() },
+	logger{ nullptr }
 {
 }
 
-FileParser::FileParser(FileParser const& other) noexcept:
+FileParser::FileParser(FileParser const& other) noexcept :
 	NamespaceParser(other),
-	_clangIndex{clang_createIndex(0, 0)},	//Don't copy clang index, create a new one
-	_settings{other._settings},
-	logger{other.logger}
+	_clangIndex{ clang_createIndex(0, 0) },	//Don't copy clang index, create a new one
+	_settings{ other._settings },
+	logger{ other.logger }
 {
 }
 
-FileParser::FileParser(FileParser&& other) noexcept:
+FileParser::FileParser(FileParser&& other) noexcept :
 	NamespaceParser(std::forward<NamespaceParser>(other)),
-	_clangIndex{std::forward<CXIndex>(other._clangIndex)},
+	_clangIndex{ std::forward<CXIndex>(other._clangIndex) },
 	_propertyParser(std::forward<PropertyParser>(other._propertyParser)),
-	_settings{other._settings},
-	logger{other.logger}
+	_settings{ other._settings },
+	logger{ other.logger }
 {
 	other._clangIndex = nullptr;
 }
@@ -56,29 +58,16 @@ bool FileParser::parse(fs::path const& toParseFile, FileParsingResult& out_resul
 		//Fill the parsed file info
 		out_result.parsedFile = FilesystemHelpers::sanitizePath(toParseFile);
 
+		// Extracting file id
+		auto filePathStr = out_result.parsedFile.string();
+		out_result.fileId = "FID_" + std::to_string(std::hash<std::string>{}(filePathStr));
+
 		//Parse the given file
 		CXTranslationUnit translationUnit = clang_parseTranslationUnit(_clangIndex, toParseFile.string().c_str(), _settings->getCompilationArguments().data(), static_cast<int32>(_settings->getCompilationArguments().size()), nullptr, 0, CXTranslationUnit_SkipFunctionBodies | CXTranslationUnit_Incomplete | CXTranslationUnit_KeepGoing);
 
 		if (translationUnit != nullptr)
 		{
 			ParsingContext& context = pushContext(translationUnit, out_result);
-
-			// Extracting file id
-			{
-				auto location = clang_getCursorLocation(context.rootCursor);
-				CXFile file;
-				clang_getFileLocation(location, &file, nullptr, nullptr, nullptr);
-				CXFileUniqueID fileId;
-				clang_getFileUniqueID(file, &fileId);
-				std::stringstream sb;
-				sb << "FID_";
-				sb << fileId.data[0];
-				sb << "_";
-				sb << fileId.data[1];
-				sb << "_";
-				sb << fileId.data[2];
-				out_result.fileId = sb.str();
-			}
 
 			if (clang_visitChildren(context.rootCursor, &FileParser::parseNestedEntity, this) || !out_result.errors.empty())
 			{
@@ -121,20 +110,20 @@ bool FileParser::parse(fs::path const& toParseFile, FileParsingResult& out_resul
 
 CXChildVisitResult FileParser::parseNestedEntity(CXCursor cursor, CXCursor /* parentCursor */, CXClientData clientData) noexcept
 {
-	FileParser*	parser	= reinterpret_cast<FileParser*>(clientData);
+	FileParser* parser = reinterpret_cast<FileParser*>(clientData);
 
 	DISABLE_WARNING_PUSH
-	DISABLE_WARNING_UNSCOPED_ENUM
-	
-	CXChildVisitResult	visitResult = CXChildVisitResult::CXChildVisit_Continue;
+		DISABLE_WARNING_UNSCOPED_ENUM
+
+		CXChildVisitResult	visitResult = CXChildVisitResult::CXChildVisit_Continue;
 
 	DISABLE_WARNING_POP
 
-	//Parse the given file ONLY, ignore headers
-	if (clang_Location_isFromMainFile(clang_getCursorLocation(cursor)))
-	{
-		switch (cursor.kind)
+		//Parse the given file ONLY, ignore headers
+		if (clang_Location_isFromMainFile(clang_getCursorLocation(cursor)))
 		{
+			switch (cursor.kind)
+			{
 			case CXCursorKind::CXCursor_Namespace:
 				parser->addNamespaceResult(parser->parseNamespace(cursor, visitResult));
 				break;
@@ -163,8 +152,8 @@ CXChildVisitResult FileParser::parseNestedEntity(CXCursor cursor, CXCursor /* pa
 
 			default:
 				break;
+			}
 		}
-	}
 
 	return visitResult;
 }
@@ -175,12 +164,12 @@ ParsingContext& FileParser::pushContext(CXTranslationUnit const& translationUnit
 
 	ParsingContext newContext;
 
-	newContext.parentContext	= nullptr;
-	newContext.rootCursor		= clang_getTranslationUnitCursor(translationUnit);
-	newContext.propertyParser	= &_propertyParser;
-	newContext.parsingSettings	= _settings.get();
-	newContext.structClassTree	= &out_result.structClassTree;
-	newContext.parsingResult	= &out_result;
+	newContext.parentContext = nullptr;
+	newContext.rootCursor = clang_getTranslationUnitCursor(translationUnit);
+	newContext.propertyParser = &_propertyParser;
+	newContext.parsingSettings = _settings.get();
+	newContext.structClassTree = &out_result.structClassTree;
+	newContext.parsingResult = &out_result;
 
 	contextsStack.push(std::move(newContext));
 
@@ -203,17 +192,17 @@ void FileParser::addClassResult(ClassParsingResult&& result) noexcept
 	{
 		switch (result.parsedClass->entityType)
 		{
-			case EEntityType::Struct:
-				getParsingResult()->structs.emplace_back(std::move(result.parsedClass).value());
-				break;
+		case EEntityType::Struct:
+			getParsingResult()->structs.emplace_back(std::move(result.parsedClass).value());
+			break;
 
-			case EEntityType::Class:
-				getParsingResult()->classes.emplace_back(std::move(result.parsedClass).value());
-				break;
+		case EEntityType::Class:
+			getParsingResult()->classes.emplace_back(std::move(result.parsedClass).value());
+			break;
 
-			default:
-				assert(false);	//Should never reach this line
-				break;
+		default:
+			assert(false);	//Should never reach this line
+			break;
 		}
 	}
 
