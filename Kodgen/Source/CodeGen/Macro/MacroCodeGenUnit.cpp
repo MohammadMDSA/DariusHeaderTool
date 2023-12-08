@@ -28,8 +28,8 @@ void MacroCodeGenUnit::initialGenerateCode(CodeGenEnv& env, std::function<void(C
 	//Generate code for each code location
 	for (int i = 0u; i < static_cast<int>(ECodeGenLocation::Count); i++)
 	{
-		macroEnv._codeGenLocation	= static_cast<ECodeGenLocation>(i);
-		macroEnv._separator			= _separators[i];
+		macroEnv._codeGenLocation = static_cast<ECodeGenLocation>(i);
+		macroEnv._separator = _separators[i];
 
 		/**
 		*	No initial call when the CodeGenLocation is ClassFooter
@@ -58,8 +58,8 @@ void MacroCodeGenUnit::generateCodeForEntity(EntityInfo const& entity, CodeGenEn
 	//Generate code for each code location
 	for (int i = 0u; i < static_cast<int>(ECodeGenLocation::Count); i++)
 	{
-		macroEnv._codeGenLocation	= static_cast<ECodeGenLocation>(i);
-		macroEnv._separator			= _separators[i];
+		macroEnv._codeGenLocation = static_cast<ECodeGenLocation>(i);
+		macroEnv._separator = _separators[i];
 
 		/**
 		*	Forward ECodeGenLocation::ClassFooter generation only if the entity is a
@@ -117,7 +117,8 @@ bool MacroCodeGenUnit::postGenerateCode(CodeGenEnv& env) noexcept
 
 void MacroCodeGenUnit::generateHeaderFile(MacroCodeGenEnv& env) noexcept
 {
-	GeneratedFile generatedHeader(getGeneratedHeaderFilePath(env.getFileParsingResult()->parsedFile), env.getFileParsingResult()->parsedFile);
+	auto parsingResult = env.getFileParsingResult();
+	GeneratedFile generatedHeader(getGeneratedHeaderFilePath(parsingResult->parsedFile), parsingResult->parsedFile);
 
 	MacroCodeGenUnitSettings const* castSettings = getSettings();
 
@@ -126,28 +127,39 @@ void MacroCodeGenUnit::generateHeaderFile(MacroCodeGenEnv& env) noexcept
 	//Include the entity file
 	generatedHeader.writeLine("#include \"" + CodeGenUnitSettings::entityMacrosFilename.string() + "\"\n");
 
+	// Add file id
+	auto fileId = parsingResult->fileId;
+	generatedHeader.writeLine("#undef CURRENT_FILE_ID");
+	generatedHeader.writeLine("#define CURRENT_FILE_ID " + fileId);
+
 	//Write header file header code
 	generatedHeader.writeLine(std::move(_generatedCodePerLocation[static_cast<int>(ECodeGenLocation::HeaderFileHeader)]));
 
 	//Write all struct/class footer macros
 	//We must iterate over all structs/class from scratch since registered generators are not guaranteed to traverse all struct/class
-	env.getFileParsingResult()->foreachEntityOfType(EEntityType::Class | EEntityType::Struct,
-													[this, &generatedHeader, castSettings](EntityInfo const& entity)
-													{
-														//Cast is safe since we only iterate on structs & classes
-														StructClassInfo const* struct_ = reinterpret_cast<StructClassInfo const*>(&entity);
+	parsingResult->foreachEntityOfType(EEntityType::Class | EEntityType::Struct,
+		[this, &generatedHeader, castSettings, fileId](EntityInfo const& entity)
+		{
+			//Cast is safe since we only iterate on structs & classes
+			StructClassInfo const* struct_ = reinterpret_cast<StructClassInfo const*>(&entity);
 
-														if (!struct_->isForwardDeclaration)
-														{
-															auto it = _classFooterGeneratedCode.find(struct_);
+			if (!struct_->isForwardDeclaration)
+			{
+				auto it = _classFooterGeneratedCode.find(struct_);
 
-															generatedHeader.writeMacro(castSettings->getClassFooterMacro(*struct_), (it != _classFooterGeneratedCode.end()) ? std::move(it->second) : std::string());
-														}
-													});
+				generatedHeader.writeMacro(castSettings->getClassFooterMacro(*struct_), (it != _classFooterGeneratedCode.end()) ? std::move(it->second) : std::string());
+
+				auto codeGenIdentifierLine = struct_->codeGenIdentifierLine;
+				if (codeGenIdentifierLine > 0)
+				{
+					generatedHeader.writeLine("#define " + fileId + "_" + std::to_string(codeGenIdentifierLine) + "_GENERATED_BODY\t" + castSettings->getClassFooterMacro(*struct_));
+				}
+			}
+		});
 
 	//Write header file footer code
-	generatedHeader.writeMacro(castSettings->getHeaderFileFooterMacro(env.getFileParsingResult()->parsedFile),
-							   std::move(_generatedCodePerLocation[static_cast<int>(ECodeGenLocation::HeaderFileFooter)]));
+	generatedHeader.writeMacro(castSettings->getHeaderFileFooterMacro(parsingResult->parsedFile),
+		std::move(_generatedCodePerLocation[static_cast<int>(ECodeGenLocation::HeaderFileFooter)]));
 }
 
 void MacroCodeGenUnit::generateSourceFile(MacroCodeGenEnv& env) noexcept

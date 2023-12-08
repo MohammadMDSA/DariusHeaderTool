@@ -134,6 +134,7 @@ void ParsingSettings::refreshCompilationArguments(ILogger* logger) noexcept
 	_compilationArguments.emplace_back(_enumPropertyMacro.data());
 	_compilationArguments.emplace_back(_enumValuePropertyMacro.data());
 	_compilationArguments.emplace_back("-DNOMINMAX");
+	_compilationArguments.emplace_back("-DCODEGEN_BUILD");
 
 	for (std::string const& includeDir : _projectIncludeDirs)
 	{

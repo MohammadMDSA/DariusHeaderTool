@@ -33,6 +33,13 @@ public:
 				clazz.codeGenIdentifierLine = innerClass->line;
 			}
 		}
+		env.getLogger()->log((clazz.entityType == kodgen::EEntityType::Class ? "Class" : "Struct") + std::to_string(clazz.nestedClasses.size()) + " " + clazz.getFullName());
+
+		if (!foundCodeGenIdentifier)
+		{
+			env.getLogger()->log("Could not find GENERATED_CODE() macro in the class body for class " + clazz.getFullName(), kodgen::ILogger::ELogSeverity::Error);
+		}
+		return foundCodeGenIdentifier;
 	}
 
 	virtual bool generateClassFooterCodeForEntity(kodgen::EntityInfo const& entity,
