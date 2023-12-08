@@ -30,6 +30,9 @@ namespace kodgen
 			/** Path to the parsed file. */
 			fs::path						parsedFile;
 
+			/** Unique file id */
+			std::string						fileId;
+
 			/** All namespaces contained directly under file level. */
 			std::vector<NamespaceInfo>		namespaces;
 

@@ -6,6 +6,8 @@
 #include "Kodgen/Misc/DisableWarningMacros.h"
 #include "Kodgen/Misc/TomlUtility.h"
 
+#include <sstream>
+
 using namespace kodgen;
 
 FileParser::FileParser() noexcept:
@@ -60,6 +62,23 @@ bool FileParser::parse(fs::path const& toParseFile, FileParsingResult& out_resul
 		if (translationUnit != nullptr)
 		{
 			ParsingContext& context = pushContext(translationUnit, out_result);
+
+			// Extracting file id
+			{
+				auto location = clang_getCursorLocation(context.rootCursor);
+				CXFile file;
+				clang_getFileLocation(location, &file, nullptr, nullptr, nullptr);
+				CXFileUniqueID fileId;
+				clang_getFileUniqueID(file, &fileId);
+				std::stringstream sb;
+				sb << "FID_";
+				sb << fileId.data[0];
+				sb << "_";
+				sb << fileId.data[1];
+				sb << "_";
+				sb << fileId.data[2];
+				out_result.fileId = sb.str();
+			}
 
 			if (clang_visitChildren(context.rootCursor, &FileParser::parseNestedEntity, this) || !out_result.errors.empty())
 			{
