@@ -48,6 +48,15 @@ public:
 		return foundCodeGenIdentifier;
 	}
 
+	virtual bool generateHeaderFileHeaderCodeForEntity(kodgen::EntityInfo const& entity,
+		kodgen::Property const& prop, kodgen::uint8 propertyIndex, kodgen::MacroCodeGenEnv& env, std::string& inout_result) noexcept override
+	{
+		kodgen::StructClassInfo const& safeClass = reinterpret_cast<kodgen::StructClassInfo const&>(entity);
+		inout_result += "static void rttr_auto_register_reflection_function_" + safeClass.name + "_(); " + env.getSeparator();
+
+		return true;
+	}
+
 	virtual bool generateClassFooterCodeForEntity(kodgen::EntityInfo const& entity,
 		kodgen::Property const& property,
 		std::uint8_t			propertyIndex,
@@ -56,7 +65,7 @@ public:
 	{
 		kodgen::StructClassInfo const& clazz = reinterpret_cast<kodgen::StructClassInfo const&>(entity);
 
-		inout_result += "RTTR_REGISTRATION_FRIEND " + env.getSeparator();
+		inout_result += "RTTR_REGISTRATION_FRIEND_PFX(" + clazz.name + ") " + env.getSeparator();
 		inout_result += "RTTR_ENABLE(";
 
 		bool firstParent = true;
@@ -92,7 +101,7 @@ public:
 			isResourceCLass = true;
 
 		inout_result += "#include <rttr/registration.h>\n";
-		inout_result += "RTTR_REGISTRATION \n";
+		inout_result += "RTTR_REGISTRATION_PFX(" + clazz.name + ")\n";
 		inout_result += "{\n";
 		inout_result += "rttr::registration::class_<" + clazz.getFullName() + ">(\"" + clazz.getFullName() + "\")";
 
