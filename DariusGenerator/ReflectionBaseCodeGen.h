@@ -115,8 +115,9 @@ public:
 		{
 			bool isConst;
 			bool isSerializable;
+			bool isAnimatable;
 
-			GetFieldInfo(field, isConst, isSerializable);
+			GetFieldInfo(field, isConst, isSerializable, isAnimatable);
 
 			auto fieldName = field.name[0] == 'm' ? field.name.substr(1, field.name.size() - 1) : field.name;
 
@@ -128,7 +129,7 @@ public:
 
 				inout_result += "\n\t.property(\"" + fieldName + "\", &" + field.getFullName() + ")";
 
-				if (!isSerializable || false)
+				if (!isSerializable || isAnimatable)
 				{
 					bool isFirst = true;
 
@@ -138,6 +139,13 @@ public:
 					if (!isSerializable)
 					{
 						inout_result += "\n\t\trttr::metadata(\"NO_SERIALIZE\", true)";
+						isFirst = false;
+					}
+					if (isAnimatable)
+					{
+						if (!isFirst)
+							inout_result += ",";
+						inout_result += "\n\t\trttr::metadata(\"ANIMATE\", true)";
 						isFirst = false;
 					}
 
@@ -150,6 +158,7 @@ public:
 		for (auto const& arg : property.arguments)
 		{
 			bool isSerializable = true;
+			bool isAnimatable = true;
 			bool isBoolean = false;
 
 			short offset = 0;
@@ -157,6 +166,7 @@ public:
 			if (arg[offset] == '_')
 			{
 				isSerializable = false;
+				isAnimatable = false;
 				offset++;
 			}
 
@@ -172,9 +182,26 @@ public:
 			inout_result += isBoolean ? "::Is" : "::Get";
 			inout_result += propName + ", &" + clazz.getFullName() + "::Set" + propName + ")";
 
-			// Serializable
-			if (!isSerializable)
-				inout_result += " (rttr::metadata(\"NO_SERIALIZE\", true))";
+			if (!isSerializable || isAnimatable)
+			{
+				bool firstMeta = true;
+				inout_result += "(";
+
+				// Serializable
+				if (!isSerializable)
+				{
+					inout_result += "\n\t\trttr::metadata(\"NO_SERIALIZE\", true)";
+					firstMeta = false;
+				}
+				if (isAnimatable)
+				{
+					if (!firstMeta)
+						inout_result += ",";
+					inout_result += "\n\t\trttr::metadata(\"ANIMATE\", true)";
+					firstMeta = false;
+				}
+				inout_result += ")";
+			}
 		}
 
 		inout_result += ";";
